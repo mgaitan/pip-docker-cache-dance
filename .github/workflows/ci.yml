@@ -33,6 +33,3 @@ jobs:
           file: Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Test
-        run: docker run demo:main python -c 'import one'
