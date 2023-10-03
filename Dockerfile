@@ -1,8 +1,8 @@
-# Primera etapa: imagen base de Python
+
 FROM python:3.8.17-slim-bullseye AS base
 WORKDIR /app
 COPY requirements.txt .
-# Usamos la cache para las dependencias, así solo se reinstalan si hay cambios en requirements.txt
+# 
 RUN pip install --no-cache-dir virtualenv && \
     virtualenv venv
 
