@@ -16,7 +16,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: cache-pip
-          key: cache-pip-${{ hashFiles('Dockerfile') }}
+          key: cache-pip-demo
       - name: inject cache-pip into docker
         uses: reproducible-containers/buildkit-cache-dance@v2.1.2
         with:
