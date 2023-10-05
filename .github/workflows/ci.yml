@@ -12,16 +12,16 @@ jobs:
         id: meta
         with:
           images: demo
-      - name: Cache cache-pip
-        uses: actions/cache@v3
+      
+      - name: Restore requirements cache
+        uses: actions/cache/restore@v3
+        id: restore-requirements-cache
         with:
-          path: cache-pip
-          key: cache-pip-demo
-      - name: inject cache-pip into docker
-        uses: reproducible-containers/buildkit-cache-dance@v2.1.2
-        with:
-          cache-source: cache-pip
-          cache-target: /root/.cache/pip
+          path: .pip_cache
+          key: pip_cache
+
+      - name: Inspect cache
+        run: ls .pip_cache
       
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -33,3 +33,22 @@ jobs:
           file: Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # the following steps are needed only when you need to update the cache
+      - name: Retrieve pip cache-dir from the container
+        if: true # add condition to update cache
+        run: |
+          docker build --target cache_dependencies -t temp_cache_dependencies:latest .
+          # create a temporal container and copy the cache from it to the host
+          id=$(docker create temp_cache_dependencies:latest)
+          rm -r .pip_cache   # remove placeholder dir 
+          docker cp $id:/root/.cache/pip .pip_cache
+          docker rm -v $id
+
+      - name: Save requirements to github actionscache
+        if: true # add condition to update cache
+        uses: actions/cache/save@v3
+        id: save-requirements-cache
+        with:
+          path: .pip_cache
+          key: pip_cache
