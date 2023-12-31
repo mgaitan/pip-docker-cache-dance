@@ -1,14 +1,7 @@
-FROM amazonlinux:2023@sha256:521e488723a1ae16055067e3b78954870cf1c08c9d45421b9f8ffad82b349e1c as base
+FROM ubuntu:22.04 as base
 
-RUN \
-    yum -y update-minimal \
-    && yum -y install \
-    # To make pnpm install work
-    gcc-c++ make python3 \
-    # Runtime debugging
-    psmisc \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+RUN apt-get update && \
+    apt-get install -y python3
 
 RUN python -m venv /opt/venv
 
